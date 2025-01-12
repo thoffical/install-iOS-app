@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Install iOS App</title>
+</head>
+<body>
+  <h1>Install Your Favorite iOS App</h1>
+  <p>Click below to install the app directly to your device:</p>
+
+  <!-- Dropdown to choose app -->
+  <label for="app-select">Choose an App:</label>
+  <select id="app-select">
+    <option value="myapp">My App</option>
+    <option value="anotherapp">Another App</option>
+  </select>
+
+  <div id="install-buttons"></div>
+
+  <script>
+    // Define the apps and their details
+    const apps = {
+      myapp: {
+        title: "My App",
+        ipa: "myapp.ipa",
+        bundle: "com.example.myapp",
+        version: "1.0.0"
+      },
+      anotherapp: {
+        title: "Another App",
+        ipa: "anotherapp.ipa",
+        bundle: "com.example.anotherapp",
+        version: "1.0.0"
+      }
+    };
+
+    // Function to replace {yourappname} and update the links
+    function generateInstallButton(appName) {
+      const app = apps[appName];
+
+      // Generate dynamic manifest URL
+      const manifestUrl = `https://thoffical.github.io/install-iOS-app/${appName}-manifest.plist`;
+      const ipaUrl = `https://thoffical.github.io/install-iOS-app/${app.ipa}`;
+
+      // Create manifest plist content (dynamically replacing placeholders)
+      const manifestPlist = `
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>items</key>
+          <array>
+            <dict>
+              <key>assets</key>
+              <array>
+                <dict>
+                  <key>kind</key>
+                  <string>software-package</string>
+                  <key>url</key>
+                  <string>${ipaUrl}</string>
+                </dict>
+              </array>
+              <key>metadata</key>
+              <dict>
+                <key>bundle-identifier</key>
+                <string>${app.bundle}</string>
+                <key>bundle-version</key>
+                <string>${app.version}</string>
+                <key>kind</key>
+                <string>software</string>
+                <key>title</key>
+                <string>${app.title}</string>
+              </dict>
+            </dict>
+          </array>
+        </plist>
+      `;
+
+      // Display the installation button for the selected app
+      const installButton = `<a href="itms-services://?action=download-manifest&url=${manifestUrl}">
+                               <button>Install ${app.title}</button>
+                             </a>`;
+      document.getElementById('install-buttons').innerHTML = installButton;
+
+      // Optionally, you could dynamically save the manifest file (if hosting files directly)
+      // For now, this is just a placeholder for generating download links.
+    }
+
+    // Event listener to update the install button when app is selected
+    document.getElementById("app-select").addEventListener("change", function() {
+      const appName = this.value;
+      generateInstallButton(appName); // Update the button dynamically
+    });
+
+    // Initial load (set the default app when the page is loaded)
+    generateInstallButton("myapp");
+
+  </script>
+
+  <p>After installation, go to <b>Settings > General > VPN & Device Management</b> to trust the app.</p>
+
+  <footer>
+    <p>Note: This page requires an Apple developer account for sideloading apps.</p>
+  </footer>
+</body>
+</html>
